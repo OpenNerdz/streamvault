@@ -25,11 +25,12 @@ describe('downloader options', () => {
       outputDir: '/tmp/downloads',
     });
 
-    assert.deepEqual(args.slice(0, 10), [
+    assert.deepEqual(args.slice(0, 11), [
       '--newline',
       '--no-playlist',
       '--windows-filenames',
       '--restrict-filenames',
+      '--force-ipv4',
       '--merge-output-format',
       'mp4',
       '--ffmpeg-location',

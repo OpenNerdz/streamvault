@@ -80,6 +80,7 @@ export function createDownloadArgs({ url, quality = 'best', outputDir = DOWNLOAD
     '--no-playlist',
     '--windows-filenames',
     '--restrict-filenames',
+    '--force-ipv4',
     '--merge-output-format',
     'mp4',
     '--ffmpeg-location',
