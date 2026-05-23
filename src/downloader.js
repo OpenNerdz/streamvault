@@ -119,9 +119,17 @@ export async function checkPrerequisites() {
   await access(DOWNLOADS_DIR, constants.W_OK);
 }
 
-export function startDownload({ url, quality = 'best', outputDir = DOWNLOADS_DIR, onLine }) {
+export function startDownload({
+  url,
+  quality = 'best',
+  outputDir = DOWNLOADS_DIR,
+  onLine,
+  spawnDownload = spawn,
+}) {
   const args = createDownloadArgs({ url, quality, outputDir });
-  const child = spawn(packagedYtDlpPath, args, {
+  let lastErrorLine = '';
+
+  const child = spawnDownload(packagedYtDlpPath, args, {
     stdio: ['ignore', 'pipe', 'pipe'],
   });
 
@@ -133,6 +141,10 @@ export function startDownload({ url, quality = 'best', outputDir = DOWNLOADS_DIR
       .filter(Boolean);
 
     for (const line of lines) {
+      if (kind === 'stderr') {
+        lastErrorLine = line;
+      }
+
       onLine?.({ kind, line, progress: parseProgress(line) });
     }
   };
@@ -148,7 +160,7 @@ export function startDownload({ url, quality = 'best', outputDir = DOWNLOADS_DIR
         if (code === 0) {
           resolve();
         } else {
-          reject(new Error(`yt-dlp exited with code ${code}.`));
+          reject(new Error(lastErrorLine || `yt-dlp exited with code ${code}.`));
         }
       });
     }),
