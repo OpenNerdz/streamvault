@@ -5,6 +5,14 @@ StreamVault is a small local web app for saving online videos through a packaged
 and leaves the actual download engine to proven tools instead of reimplementing
 video extraction.
 
+## Preview
+
+![StreamVault desktop UI](docs/images/streamvault-desktop.png)
+
+<p align="center">
+  <img src="docs/images/streamvault-mobile.png" alt="StreamVault mobile layout" width="320">
+</p>
+
 ## Features
 
 - Clean browser UI with progress updates.
