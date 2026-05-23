@@ -30,7 +30,16 @@ async function assertLayout(page) {
     throw new Error(`Unexpected horizontal overflow: ${JSON.stringify(overflow)}`);
   }
 
-  for (const selector of ['h1', '.download-form', '.queue', '#url', '#quality']) {
+  for (const selector of [
+    'h1',
+    '.download-form',
+    '.queue',
+    '#url',
+    '#quality',
+    'button[type="submit"]',
+    '#openDownloadsFolder',
+    '#refreshJobs',
+  ]) {
     const box = await page.locator(selector).boundingBox();
     if (!box || box.width <= 0 || box.height <= 0) {
       throw new Error(`${selector} is not visible.`);

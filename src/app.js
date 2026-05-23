@@ -3,11 +3,12 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { checkPrerequisites, normalizeQuality, normalizeUrl } from './downloader.js';
 import { cancelJob, createJob, getJob, listJobs, subscribeToJob } from './jobs.js';
+import { openDownloadsFolder } from './open-folder.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const publicDir = path.resolve(__dirname, '..', 'public');
 
-export function createApp() {
+export function createApp({ openFolder = openDownloadsFolder } = {}) {
   const app = express();
 
   app.use(express.json({ limit: '32kb' }));
@@ -34,6 +35,15 @@ export function createApp() {
       res.status(202).json({ job });
     } catch (error) {
       res.status(400).json({ error: error.message });
+    }
+  });
+
+  app.post('/api/downloads/open-folder', async (_req, res) => {
+    try {
+      await openFolder();
+      res.status(204).end();
+    } catch (error) {
+      res.status(500).json({ error: error.message });
     }
   });
 

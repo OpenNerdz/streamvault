@@ -191,7 +191,13 @@ code {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 12px;
   margin-bottom: 14px;
+}
+
+.section-actions {
+  display: flex;
+  gap: 8px;
 }
 
 .jobs {
@@ -280,9 +286,18 @@ code {
   }
 
   .topbar,
-  .job-main {
+  .job-main,
+  .section-head {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .section-actions {
+    width: 100%;
+  }
+
+  .section-actions .ghost {
+    flex: 1;
   }
 
   .input-row {

@@ -26,4 +26,34 @@ describe('api', () => {
 
     assert.match(response.body.error, /Unsupported quality/);
   });
+
+  it('opens the downloads folder through the API', async () => {
+    let opened = false;
+
+    await request(
+      createApp({
+        openFolder: async () => {
+          opened = true;
+        },
+      }),
+    )
+      .post('/api/downloads/open-folder')
+      .expect(204);
+
+    assert.equal(opened, true);
+  });
+
+  it('reports downloads folder open failures', async () => {
+    const response = await request(
+      createApp({
+        openFolder: async () => {
+          throw new Error('open failed');
+        },
+      }),
+    )
+      .post('/api/downloads/open-folder')
+      .expect(500);
+
+    assert.equal(response.body.error, 'open failed');
+  });
 });

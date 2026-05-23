@@ -1,6 +1,7 @@
 const form = document.querySelector('#downloadForm');
 const jobsEl = document.querySelector('#jobs');
 const healthEl = document.querySelector('#health');
+const openFolderButton = document.querySelector('#openDownloadsFolder');
 const refreshButton = document.querySelector('#refreshJobs');
 const submitButton = form.querySelector('button[type="submit"]');
 const streams = new Map();
@@ -116,6 +117,25 @@ form.addEventListener('submit', async (event) => {
 });
 
 refreshButton.addEventListener('click', loadJobs);
+
+openFolderButton.addEventListener('click', async () => {
+  openFolderButton.disabled = true;
+
+  try {
+    const response = await fetch('/api/downloads/open-folder', {
+      method: 'POST',
+    });
+
+    if (!response.ok) {
+      const payload = await response.json();
+      throw new Error(payload.error || 'Could not open the downloads folder.');
+    }
+  } catch (error) {
+    setHealth(false, error.message);
+  } finally {
+    openFolderButton.disabled = false;
+  }
+});
 
 await checkHealth();
 await loadJobs();
