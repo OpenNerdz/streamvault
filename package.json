@@ -4,10 +4,21 @@
   "description": "A lean, local-first video downloader with a clean web UI.",
   "type": "module",
   "private": true,
+  "main": "src/electron/main.js",
+  "author": {
+    "name": "OpenNerdz",
+    "email": "285293891+OpenNerdz@users.noreply.github.com"
+  },
   "scripts": {
     "start": "node src/server.js",
+    "dev": "electron .",
     "test": "node --test",
-    "check": "npm test"
+    "screenshot": "node scripts/screenshot-ui.js",
+    "check": "npm test && npm run screenshot",
+    "build": "electron-builder --publish never",
+    "build:linux": "electron-builder --linux --publish never",
+    "build:mac": "electron-builder --mac --publish never",
+    "build:win": "electron-builder --win --publish never"
   },
   "dependencies": {
     "express": "^5.1.0",
@@ -15,9 +26,52 @@
     "yt-dlp-exec": "^1.0.2"
   },
   "devDependencies": {
-    "supertest": "^7.1.1"
+    "electron": "^42.2.0",
+    "electron-builder": "^26.8.1",
+    "playwright": "^1.60.0",
+    "supertest": "^7.1.1",
+    "wait-on": "^9.0.10"
   },
   "engines": {
     "node": ">=20"
+  },
+  "build": {
+    "appId": "com.opennerdz.streamvault",
+    "productName": "StreamVault",
+    "artifactName": "StreamVault-${version}-${os}-${arch}.${ext}",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "src/**",
+      "public/**",
+      "package.json",
+      "node_modules/**"
+    ],
+    "asarUnpack": [
+      "node_modules/ffmpeg-static/**",
+      "node_modules/yt-dlp-exec/bin/**"
+    ],
+    "mac": {
+      "identity": null,
+      "target": [
+        "dmg",
+        "zip"
+      ],
+      "category": "public.app-category.video"
+    },
+    "win": {
+      "target": [
+        "nsis",
+        "zip"
+      ]
+    },
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb"
+      ],
+      "category": "AudioVideo"
+    }
   }
 }

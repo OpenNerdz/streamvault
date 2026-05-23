@@ -6,14 +6,20 @@ import ffmpegPath from 'ffmpeg-static';
 
 const require = createRequire(import.meta.url);
 const { YOUTUBE_DL_PATH: ytDlpPath } = require('yt-dlp-exec/src/constants');
+const packagedYtDlpPath = resolveExecutablePath(ytDlpPath);
+const packagedFfmpegPath = ffmpegPath ? resolveExecutablePath(ffmpegPath) : null;
 
-export const DOWNLOADS_DIR = path.resolve('downloads');
+export const DOWNLOADS_DIR = path.resolve(process.env.STREAMVAULT_DOWNLOADS_DIR ?? 'downloads');
 export const QUALITY_PRESETS = new Set(['best', '2160', '1440', '1080', '720', '480', '360']);
+
+function resolveExecutablePath(filePath) {
+  return filePath.replace('app.asar', 'app.asar.unpacked');
+}
 
 export function getRuntimePaths() {
   return {
-    ytDlp: ytDlpPath,
-    ffmpeg: ffmpegPath,
+    ytDlp: packagedYtDlpPath,
+    ffmpeg: packagedFfmpegPath,
   };
 }
 
@@ -65,8 +71,8 @@ export function createDownloadArgs({ url, quality = 'best', outputDir = DOWNLOAD
   const formatSelector = getFormatSelector(quality);
   const outputTemplate = path.join(outputDir, '%(title).200B [%(id)s].%(ext)s');
 
-  if (!ffmpegPath) {
-    throw new Error('Packaged FFmpeg binary is not available for this platform.');
+  if (!packagedFfmpegPath) {
+      throw new Error('Packaged FFmpeg binary is not available for this platform.');
   }
 
   return [
@@ -77,7 +83,7 @@ export function createDownloadArgs({ url, quality = 'best', outputDir = DOWNLOAD
     '--merge-output-format',
     'mp4',
     '--ffmpeg-location',
-    ffmpegPath,
+    packagedFfmpegPath,
     '--format',
     formatSelector,
     '--output',
@@ -115,7 +121,7 @@ export async function checkPrerequisites() {
 
 export function startDownload({ url, quality = 'best', outputDir = DOWNLOADS_DIR, onLine }) {
   const args = createDownloadArgs({ url, quality, outputDir });
-  const child = spawn(ytDlpPath, args, {
+  const child = spawn(packagedYtDlpPath, args, {
     stdio: ['ignore', 'pipe', 'pipe'],
   });
 

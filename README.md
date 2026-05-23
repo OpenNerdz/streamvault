@@ -33,15 +33,36 @@ Open `http://localhost:4137`.
 
 Downloaded files are written to `downloads/`.
 
+## Desktop App
+
+StreamVault can also be packaged as a desktop app for Windows, macOS, and Linux.
+
+```bash
+npm run build:win
+npm run build:mac
+npm run build:linux
+```
+
+Packaged installers are written to `release/`. The desktop app starts the local
+API internally and saves files to the user's `Downloads/StreamVault` folder.
+
+GitHub Actions builds all three platforms and uploads the installers as workflow
+artifacts.
+
 ## Test
 
 ```bash
 npm test
+npm run screenshot
 ```
 
 The tests do not call YouTube. They verify the downloader uses the best-quality
 format selector by default and that the API rejects invalid input before a job is
 created.
+
+The screenshot script opens the UI at desktop and mobile viewport sizes, checks
+that the core controls are visible and contained in the viewport, and saves
+screenshots under `screenshots/`.
 
 ## Notes
 
