@@ -1,8 +1,9 @@
 # StreamVault
 
-StreamVault is a small local web app for saving online videos through `yt-dlp`.
-It keeps the UI clean, uses best available quality by default, and leaves the
-actual download engine to proven tools instead of reimplementing video extraction.
+StreamVault is a small local web app for saving online videos through a packaged
+`yt-dlp` binary. It keeps the UI clean, uses best available quality by default,
+and leaves the actual download engine to proven tools instead of reimplementing
+video extraction.
 
 ## Features
 
@@ -10,26 +11,16 @@ actual download engine to proven tools instead of reimplementing video extractio
 - Best available quality by default via `yt-dlp` format selector `bv*+ba/b`.
 - Optional maximum quality presets.
 - Local-only download queue.
-- Health check for `yt-dlp` and `ffmpeg`.
+- Bundled `yt-dlp` and FFmpeg binaries through npm dependencies.
+- Health check for the packaged downloader tools.
 - Focused tests for URL validation, quality selection, command construction, and API validation.
 
 ## Requirements
 
-- Node.js 20 or newer
-- `yt-dlp`
-- `ffmpeg`
+- Node.js 20 or newer.
 
-Install the external tools with your OS package manager, for example:
-
-```bash
-brew install yt-dlp ffmpeg
-```
-
-or:
-
-```bash
-sudo apt install yt-dlp ffmpeg
-```
+No separate `yt-dlp` or FFmpeg install is needed. They are installed with the app
+dependencies.
 
 ## Run
 

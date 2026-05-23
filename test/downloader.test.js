@@ -1,8 +1,10 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 import {
+  checkPrerequisites,
   createDownloadArgs,
   getFormatSelector,
+  getRuntimePaths,
   normalizeQuality,
   normalizeUrl,
   parseProgress,
@@ -23,19 +25,32 @@ describe('downloader options', () => {
       outputDir: '/tmp/downloads',
     });
 
-    assert.deepEqual(args.slice(0, 8), [
+    assert.deepEqual(args.slice(0, 10), [
       '--newline',
       '--no-playlist',
       '--windows-filenames',
       '--restrict-filenames',
       '--merge-output-format',
       'mp4',
+      '--ffmpeg-location',
+      getRuntimePaths().ffmpeg,
       '--format',
       'bv*+ba/b',
     ]);
 
     assert.equal(args.at(-1), 'https://www.youtube.com/watch?v=dQw4w9WgXcQ');
     assert.ok(args.includes('/tmp/downloads/%(title).200B [%(id)s].%(ext)s'));
+  });
+
+  it('uses packaged downloader and ffmpeg binaries', () => {
+    const paths = getRuntimePaths();
+
+    assert.match(paths.ytDlp, /yt-dlp-exec/);
+    assert.match(paths.ffmpeg, /ffmpeg-static/);
+  });
+
+  it('can execute the packaged downloader tools', async () => {
+    await checkPrerequisites();
   });
 });
 

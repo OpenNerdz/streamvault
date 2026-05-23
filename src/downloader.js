@@ -1,9 +1,21 @@
 import { spawn } from 'node:child_process';
 import { access, constants, mkdir } from 'node:fs/promises';
+import { createRequire } from 'node:module';
 import path from 'node:path';
+import ffmpegPath from 'ffmpeg-static';
+
+const require = createRequire(import.meta.url);
+const { YOUTUBE_DL_PATH: ytDlpPath } = require('yt-dlp-exec/src/constants');
 
 export const DOWNLOADS_DIR = path.resolve('downloads');
 export const QUALITY_PRESETS = new Set(['best', '2160', '1440', '1080', '720', '480', '360']);
+
+export function getRuntimePaths() {
+  return {
+    ytDlp: ytDlpPath,
+    ffmpeg: ffmpegPath,
+  };
+}
 
 export function normalizeUrl(rawUrl) {
   if (typeof rawUrl !== 'string') {
@@ -53,6 +65,10 @@ export function createDownloadArgs({ url, quality = 'best', outputDir = DOWNLOAD
   const formatSelector = getFormatSelector(quality);
   const outputTemplate = path.join(outputDir, '%(title).200B [%(id)s].%(ext)s');
 
+  if (!ffmpegPath) {
+    throw new Error('Packaged FFmpeg binary is not available for this platform.');
+  }
+
   return [
     '--newline',
     '--no-playlist',
@@ -60,6 +76,8 @@ export function createDownloadArgs({ url, quality = 'best', outputDir = DOWNLOAD
     '--restrict-filenames',
     '--merge-output-format',
     'mp4',
+    '--ffmpeg-location',
+    ffmpegPath,
     '--format',
     formatSelector,
     '--output',
@@ -68,9 +86,9 @@ export function createDownloadArgs({ url, quality = 'best', outputDir = DOWNLOAD
   ];
 }
 
-export async function assertExecutableAvailable(binary) {
+export async function assertExecutableAvailable(binary, versionArgs = ['--version']) {
   await new Promise((resolve, reject) => {
-    const child = spawn(binary, ['--version'], { stdio: ['ignore', 'ignore', 'ignore'] });
+    const child = spawn(binary, versionArgs, { stdio: ['ignore', 'ignore', 'ignore'] });
     child.once('error', reject);
     child.once('exit', (code) => {
       if (code === 0) {
@@ -83,15 +101,21 @@ export async function assertExecutableAvailable(binary) {
 }
 
 export async function checkPrerequisites() {
-  await assertExecutableAvailable('yt-dlp');
-  await assertExecutableAvailable('ffmpeg');
+  const binaries = getRuntimePaths();
+
+  if (!binaries.ffmpeg) {
+    throw new Error('Packaged FFmpeg binary is not available for this platform.');
+  }
+
+  await assertExecutableAvailable(binaries.ytDlp);
+  await assertExecutableAvailable(binaries.ffmpeg, ['-version']);
   await mkdir(DOWNLOADS_DIR, { recursive: true });
   await access(DOWNLOADS_DIR, constants.W_OK);
 }
 
 export function startDownload({ url, quality = 'best', outputDir = DOWNLOADS_DIR, onLine }) {
   const args = createDownloadArgs({ url, quality, outputDir });
-  const child = spawn('yt-dlp', args, {
+  const child = spawn(ytDlpPath, args, {
     stdio: ['ignore', 'pipe', 'pipe'],
   });
 
