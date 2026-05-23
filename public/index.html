@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>StreamVault</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <section class="workspace" aria-label="StreamVault downloader">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow">Local video archive</p>
+            <h1>StreamVault</h1>
+          </div>
+          <div class="health" id="health">
+            <span class="dot pending"></span>
+            <span>Checking tools</span>
+          </div>
+        </header>
+
+        <form class="download-form" id="downloadForm">
+          <label for="url">Video URL</label>
+          <div class="input-row">
+            <input
+              id="url"
+              name="url"
+              type="url"
+              autocomplete="off"
+              placeholder="https://www.youtube.com/watch?v=..."
+              required
+            />
+            <select id="quality" name="quality" aria-label="Quality">
+              <option value="best">Best available</option>
+              <option value="2160">Up to 4K</option>
+              <option value="1440">Up to 1440p</option>
+              <option value="1080">Up to 1080p</option>
+              <option value="720">Up to 720p</option>
+            </select>
+            <button type="submit">Download</button>
+          </div>
+          <p class="hint">Downloads are saved to the local <code>downloads</code> folder.</p>
+        </form>
+
+        <section class="queue" aria-label="Download queue">
+          <div class="section-head">
+            <h2>Queue</h2>
+            <button class="ghost" id="refreshJobs" type="button">Refresh</button>
+          </div>
+          <div class="jobs" id="jobs">
+            <div class="empty">No downloads yet.</div>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <script src="/app.js" type="module"></script>
+  </body>
+</html>
